@@ -1,60 +1,164 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
+    <header class="header">
+      <h1>Chat</h1>
+      <!-- ログイン時にはフォームとログアウトボタンを表示 -->
+      <div v-if="user.uid" key="login">
+        [{{ user.displayName }}]
+        <button type="button" @click="doLogout">ログアウト</button>
+      </div>
+      <!-- 未ログイン時にはログインボタンを表示 -->
+      <div v-else key="logout">
+        <button type="button" @click="doLogin">ログイン</button>
+      </div>
+    </header>
+
+    <!--　Firebase から取得したリストを描画（トランジション付き）　-->
+    <transition-group name="chat" tag="div" class="list content">
+      <section v-for="{ key, name, image, message } in chat" :key="key" class="item">
+        <div class="item-image"><img :src="image" width="40" height="40"></div>
+        <div class="item-detail">
+          <div class="item-name">{{ name }}</div>
+          <div class="item-message">
+            <nl2br tag="div" :text="message"/>
+          </div>
+        </div>
+      </section>
+    </transition-group>
+  
+    <!-- 入力フォーム -->
+    <form action="" @submit.prevent="doSend" class="form">
+      <textarea
+        v-model="input"
+        :disabled="!user.uid"
+        @keydown.enter.exact.prevent="doSend"></textarea>
+      <button type="submit" :disabled="!user.uid" class="send-button">Send</button>
+    </form>
   </div>
 </template>
 
 <script>
+// firebase モジュール
+import firebase from 'firebase'
+// 開業を <br> タグに変換するモジュール
+import Nl2br from 'vue-nl2br'
+
 export default {
-  name: 'app',
-  data () {
-    return {
-      msg: 'Welcome to Your Vue.js App'
+  components: { Nl2br },
+  date() {
+
+  },
+
+  created() {
+
+  },
+
+  methods: {
+    // ログイン処理
+    doLogin() {
+
+    },
+
+    // ログアウト処理
+    doLogout() {
+
+    },
+
+    // スクロール位置を一番下に移動
+    scrollBottom() {
+
+    },
+
+    // 受け取ったメッセージをchatに追加
+    // データベースに新しい要素が追加されると随時呼び出される
+    childAdded(snap) {
+
+    },
+    doSend() {
+
     }
   }
 }
 </script>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+* {
+  margin: 0;
+  box-sizing: border-box;
 }
-
-h1, h2 {
-  font-weight: normal;
+.header {
+  background: #3ab383;
+  margin-bottom: 1em;
+  padding: 0.4em 0.8em;
+  color: #fff;
 }
-
-ul {
-  list-style-type: none;
-  padding: 0;
+.content {
+  margin: 0 auto;
+  padding: 0 10px;
+  max-width: 600px;
 }
-
-li {
+.form {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  bottom: 0;
+  height: 80px;
+  width: 100%;
+  background: #f5f5f5;
+}
+.form textarea {
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  height: 4em;
+  width: calc(100% - 6em);
+  resize: none;
+}
+.list {
+  margin-bottom: 100px;
+}
+.item {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 0.8em;
+}
+.item-image img {
+  border-radius: 20px;
+  vertical-align: top;
+}
+.item-detail {
+  margin: 0 0 0 1.4em;
+}
+.item-name {
+  font-size: 75%;
+}
+.item-message {
+  position: relative;
   display: inline-block;
-  margin: 0 10px;
+  padding: 0.8em;
+  background: #deefe8;
+  border-radius: 4px;
+  line-height: 1.2em;
 }
-
-a {
-  color: #42b983;
+.item-message::before {
+  position: absolute;
+  content: " ";
+  display: block;
+  left: -16px;
+  bottom: 12px;
+  border: 4px solid transparent;
+  border-right: 12px solid #deefe8;
+}
+.send-button {
+  height: 4em;
+}
+/* トランジション用スタイル */
+.chat-enter-active {
+  transition: all 1s;
+}
+.chat-enter {
+  opacity: 0;
+  transform: translateX(-1em);
 }
 </style>
